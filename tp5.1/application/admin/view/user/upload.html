@@ -1,0 +1,16 @@
+<form class="layui-form layui-box" style='padding:25px 30px 20px 0' action="__SELF__" data-auto="true" method="post">
+
+  <div class="form-group">
+    <label class="col-md-2 control-label layui-form-label label-required">数据文件路径</label>
+    <div class="col-md-9">
+      <input type="text" readonly="readonly" class="layui-input" onchange="$(this).val(this.value);" value="{$vo.file_name|default=''}" name="file_name" required="required" title="请上传数据文件"/>
+      <p class="help-block">文件最大2Mb，支持excel格式</p>
+      <a data-file="one" data-type="csv,xls,xlsx" data-field="file_name" class='btn btn-link'>选择文件</a>
+    </div>
+  </div>
+  <div class="layui-form-item text-center">
+    {if isset($vo['id'])}<input type='hidden' value='{$vo.id}' name='id'/>{/if}
+    <button class="layui-btn" type='submit'>立即上传</button>
+  </div>
+
+</form>

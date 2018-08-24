@@ -1,0 +1,133 @@
+{extend name='extra@admin/content'}
+{block name="content"}
+
+<div class="layui-form layui-form-pane form-search">
+    <div class="layui-form-item layui-inline">
+        <button class="layui-btn layui-btn-small" onclick="connect();"><i class="layui-icon">&#xe615;</i> 连 接
+        </button>
+    </div>
+</div>
+<div class="layui-form layui-form-pane form-search">
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">定时时间</label>
+        <div class="layui-input-inline">
+            <input name="timer" value="" placeholder="请输入定时时间" id="range-date" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">姓名</label>
+        <div class="layui-input-inline">
+            <input name="username" value="" placeholder="请输入定时时间" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <label class="layui-form-label">手机</label>
+        <div class="layui-input-inline">
+            <input name="phone" value="" placeholder="请输入定时时间" class="layui-input" minlength="11">
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <button class="layui-btn layui-btn-small" onclick="addTimer();"><i class="layui-icon">&#xe615;</i>
+            添加定时任务
+        </button>
+    </div>
+</div>
+<script type="text/javascript">
+    window.form.render();
+    window.laydate.render({festival: true, elem: '#range-date', format: 'yyyy-MM-dd HH:mm:ss'});
+
+    if (!window.WebSocket) console.log('This browser does not supports WebSocket');
+    var ws, data = {}, uid = '{:session("user.id")}', timer = '{$timer}';
+    var log_centent = '{"type": "login", "uid": ' + uid + '}';//用户登录信息
+    // 连接服务端
+    function connect() {
+        ws = new WebSocket("ws://service.weilmanky.cn:8123");
+        // 当socket连接打开时 发送用户ID绑定client_id
+        ws.onopen = function (e) {
+            ws.send(log_centent);
+            // 当有消息时根据消息类型显示不同信息
+            ws.onmessage = function (e) {
+                data = e.data ? JSON.parse(e.data) : {type: ''};
+                switch (data.type) {
+                    case 'login':
+                        console.log(data);
+                        break;
+                    case 'bind':
+                        //bind(data.client_id, data.uid);
+                        console.log(data);
+                        break;
+                    case 'ping':
+                        //console.log(data);
+                        break;
+                    case 'logout':
+                        console.log(data);
+                        break;
+                    case 'addTimer':
+                        incoming(data);//一维数组
+                        console.log(data);
+                        break;
+                    default:
+                        console.log(data);
+                        break;
+                }
+            };
+        };
+
+        //发生错误时
+        ws.onerror = function (e) {
+            console.log(e);
+        };
+
+        //断开连接时自动重连
+        ws.onclose = function (e) {
+
+        };
+    }
+
+    function addTimer() {
+        if (!ws) connect();
+        setTimeout(function () {
+            var data = {username: $("input[name='username']").val(), timer: $("input[name='timer']").val(), phone: $("input[name='phone']").val()};
+            $.post("/demo/socket/addTimer", data, function (result) {
+                var json_timer = JSON.stringify(result);
+                if (ws) {
+                    ws.send(json_timer);//单个开启定时
+                    console.log('开启成功！');
+                }
+            });
+        }, 2000);
+    }
+
+    function bind(client_id, uid) {
+        $.post("/demo/socket/ajaxBind", {client_id: client_id, uid: uid}, function (result) {
+            return true;
+        });
+    }
+
+    //设置提醒弹出
+    function incoming(data) {
+        if (data.uid == uid) {
+            var html = '';
+            html += '<b>姓名：<a style="color: #ff3366" onclick="return layer.closeAll();" data-open="/consult/center/call_phone.html?id=' + data.cust_id + '">' + data.username + '；电话：' + data.phone + '</a> 需马上跟进！</b><br/>';
+            layer.open({
+                title: ['温馨提醒', 'color:#4898d5;'],
+                type: 1,
+                offset: 'rb',//弹出类型
+                id: 'incoming' + data.cust_id,//防止重复弹出
+                content: '<div style="padding: 10px 15px;">' + html + '</div>',//显示文本
+                btn: '取消提醒',//关闭按钮
+                btnAlign: 'c',//按钮居中
+                shade: 0,//不显示遮罩
+                anim: 2,
+                yes: function () {
+                    //点击取消提醒
+                    //clearInterval(timer);
+                    //cancel_remind(data);
+                    layer.closeAll();
+                }
+            });
+            return true;
+        }
+    }
+</script>
+{/block}

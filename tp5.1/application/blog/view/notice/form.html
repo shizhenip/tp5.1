@@ -1,0 +1,44 @@
+{extend name='extra@admin/content'}
+{block name='content'}
+<div class="panel panel-default" style="overflow:hidden">
+    <div class="panel-heading">公告</div>
+    <div class="panel-body">
+        <form class="form-horizontal" role="form" name="news" action="__SELF__" data-auto="true" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">公告标题</label>
+                <div class="layui-input-block">
+                    <input maxlength="64" required="required" value="{$vo.title|default=''}" title="标题不能为空哦"
+                           placeholder="请在这里输入标题" name='title' class="layui-input">
+                    <input type="hidden" name="id">
+                </div>
+            </div>
+
+            <div style="position:relative;margin-bottom: 10px;">
+                <label class="layui-form-label">公告内容</label>
+                <textarea placeholder="" name="content">这里可以放默认值</textarea>
+                <script>
+                    require(['ckeditor'], function () {
+                        var editor = window.createEditor('[name="content"]');
+                        // 设置内容
+                        editor.setData('{$vo.content|default=""}');
+                        // 获取内容
+                        var content = editor.getData();
+                    });
+                </script>
+            </div>
+
+            <div class="text-center">
+                {if isset($vo.id)}<input type='hidden' value='{$vo.id}' name='id'/>{/if}
+                <button class="layui-btn menu-submit">保存数据</button>
+                <input type="button" class="layui-btn menu-submit" onclick="javascript:history.back(-1);" value="返回上一页">
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    layui.use('code', function () {
+        layui.code({encode: true});
+    });
+</script>
+{/block}
+

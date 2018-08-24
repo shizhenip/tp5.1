@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html lang="zh-cmn-Hans">
+<head>
+    <title>Weilmanky</title>
+    <meta charset="UTF-8"/>
+    <meta name="renderer" content="webkit">
+    <meta name="Keywords" content="Weilmanky">
+    <meta name="Description" content="Weilmanky">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="shortcut icon" href="{:sysconf('browser_icon')}"/>
+    <script>
+        addEventListener("load", function () {
+            setTimeout(hideURLbar, 0);
+        }, false);
+
+        function hideURLbar() {
+            window.scrollTo(0, 1);
+        }
+    </script>
+    <script src="__PUBLIC__/admin/js/layui/lay/dest/layui.all.js"></script>
+    <script src="__PUBLIC__/admin/js/jquery.js"></script>
+    <script src="__PUBLIC__/admin/login/js/gt.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/admin/login/css/style.css" type="text/css" media="all"/>
+    <link rel="stylesheet" href="__PUBLIC__/admin/login/css/fontawesome-all.css">
+</head>
+<body>
+<div id="bg">
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+</div>
+<h1></h1>
+<div class="sub-main-w3">
+    <form id="doLogin" name="doLogin" method="post">
+        <h2>Login Now</h2>
+        <div class="form-style-agile">
+            <label>
+                <i class="fas fa-user"></i>
+                Username
+            </label>
+            <input id="username" title="手机/邮箱/用户名" placeholder="手机/邮箱/用户名" name="username" type="text">
+        </div>
+        <div class="form-style-agile">
+            <label>
+                <i class="fas fa-unlock-alt"></i>
+                Password
+            </label>
+            <input id="password" title="密码" placeholder="密码" name="password" type="password">
+        </div>
+        <div class="form-style-agile">
+            <label>
+                <i class="fas fa-code"></i>
+                Code
+            </label>
+            <div id="embed-captcha"></div>
+            <p id="wait" style="display:none;">正在加载......</p>
+        </div>
+        <input type="submit" value="LogIn">
+    </form>
+</div>
+<script src="__PUBLIC__/admin/js/jquery.slideunlock.js"></script>
+<script src="__PUBLIC__/admin/js/jparticle.jquery.js"></script>
+<script src="__PUBLIC__/admin/login/js/canva_moving_effect.js"></script>
+<script src="__PUBLIC__/admin/js/jquery.form.js"></script>
+<script src="__PUBLIC__/admin/login/js/login.js"></script>
+</body>
+</html>

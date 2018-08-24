@@ -1,0 +1,95 @@
+{extend name='extra@admin/content'}
+
+{block name="content"}
+<form onsubmit="return false;" data-auto="" method="POST">
+    <input type="hidden" value="resort" name="action"/>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th class='list-table-check-td'>
+                <input data-none-auto="" data-check-target='.list-check-box' type='checkbox'/>
+            </th>
+            <th class="text-center">备份名称</th>
+            <th class="text-center">卷数</th>
+            <th class="text-center">压缩</th>
+            <th class="text-center">数据大小</th>
+            <th class="text-center">备份时间</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td class='list-table-check-td'>
+                <input class="list-check-box" value='' type='checkbox'/>
+            </td>
+            <td class="text-center">{$vo.time}</td>
+            <td class="text-center">{$vo.part}</td>
+            <td class="text-center">{$vo.compress}</td>
+            <td class="text-center">{$vo.size}</td>
+            <td class="text-center">{$vo.create_at}</td>
+            <td  class="text-center nowrap">
+                {if auth("$classuri/revert")}
+                <span class="text-explode">|</span>
+                <a data-revert='{:url("$classuri/revert")}' data-value="{$vo.time}"  href="javascript:void(0)">还原数据库</a>
+                {/if}
+
+                {if auth("$classuri/del")}
+                <span class="text-explode">|</span>
+                <a data-del='{:url("$classuri/del")}' data-value="{$vo.time}"  href="javascript:void(0)">删除</a>
+                {/if}
+
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+
+</form>
+<script>
+    /**还原数据库*/
+    $body.on('click', '[data-revert]', function () {
+        var action=$(this).attr('data-revert');
+        var time=$(this).attr('data-value');
+        $.msg.confirm('确定要还原备份文件吗？', function () {
+            var self = this, status = ".";
+            $.get(action,{time:time}, success, "json");
+            window.onbeforeunload = function () { return "正在还原数据库，请不要关闭！";};
+            return false;
+            function success(data) {
+                if (data.code) {
+                    if (data.data.gz) {
+                        data.msg += status;
+                        if (status.length === 5) {
+                            status = ".";
+                        } else {
+                            status += ".";
+                        }
+                    }
+                    if(data.msg == "数据库还原完成！"){
+                        layer.alert(data.msg,6);
+                    }
+                    if (data.data.part) {
+                        $.get(action, {part: data.data.part, start: data.data.start}, success, "json");
+                    } else {
+                        window.onbeforeunload = function () {return null;};
+                    }
+                } else {
+                    layer.alert(data.msg,0);
+                }
+            }
+        });
+    });
+
+    /**删除备份文件*/
+    $body.on('click', '[data-del]', function () {
+        var action=$(this).attr('data-del');
+        var time=$(this).attr('data-value');
+        $.msg.confirm('确定要删除该备份文件不？', function () {
+            $.form.load(action, {time:time}, 'POST');
+        });
+
+    });
+
+</script>
+{/block}
